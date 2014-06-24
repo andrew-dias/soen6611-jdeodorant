@@ -1,4 +1,4 @@
-package tests.suite4;
+package tests.suite9;
 
 public class Salary extends Payment {
 

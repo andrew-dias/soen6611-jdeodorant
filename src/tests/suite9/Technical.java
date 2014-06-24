@@ -1,8 +1,8 @@
-package tests.suite4;
+package tests.suite9;
 
-public class Administrator extends Employee {
+public class Technical extends Employee {
 
-	public Administrator(String s) {
+	public Technical(String s) {
 		super(s);
 		// TODO Auto-generated constructor stub
 	}
