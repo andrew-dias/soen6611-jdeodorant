@@ -3,7 +3,9 @@ package view;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
+import metrics.CF;
 import metrics.LCOM;
+import metrics.MHF;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -27,7 +29,7 @@ import ast.ClassObject;
 import ast.CompilationUnitCache;
 import ast.SystemObject;
 
-public class MetricsAction  implements IObjectActionDelegate {
+public class MetricsActionCF  implements IObjectActionDelegate {
 	
 	private IWorkbenchPart part;
 	private ISelection selection;
@@ -111,16 +113,51 @@ public class MetricsAction  implements IObjectActionDelegate {
 						
 						if(selectedPackageFragmentRoot != null) {
 							// package fragment root selected
+							SystemObject system = ASTReader.getSystemObject();
+							Set<ClassObject> classes = system.getClassObjects(selectedPackageFragmentRoot);
+
+							// Coupling Factor
+							// calculate for system
+							CF cf = new CF(classes);
+							double cfactor = cf.systemCF();
+							System.out.println("CF\t" + selectedPackageFragmentRoot.getElementName() + "\t" + cfactor);
+
+							// calculate for individual classes
+							for (ClassObject c1 : classes) {
+								cfactor = cf.classCF(c1);
+								System.out.println("CF\t" + c1.getName() + "\t" + cfactor);
+							}							
 						}
 						else if(selectedPackageFragment != null) {
 							// package fragment selected
+							// used for the purpose of generating metrics on a test suite without regard to classes outside of test suite
+							SystemObject system = ASTReader.getSystemObject();
+							Set<ClassObject> classes = system.getClassObjects(selectedPackageFragment);
+
+							// Coupling Factor
+							// calculate for a package
+							CF cf = new CF(classes);
+							double cfactor = cf.systemCF();
+							System.out.println("CF\t" + selectedPackageFragment.getElementName() + "\t" + cfactor);
+
+							// calculate for individual classes
+							System.out.println("----Class level-----");
+							for (ClassObject c1 : classes) {
+								cfactor = cf.classCF(c1);
+								System.out.println("CF\t" + c1.getName() + "\t" + cfactor);
+							}							
 						}
 						else if(selectedCompilationUnit != null) {
-							// compilation unit selected
+							// compilation unit selected							
 							SystemObject system = ASTReader.getSystemObject();
-							Set<ClassObject> classes = system.getClassObjects(selectedCompilationUnit);
-							LCOM lcom = new LCOM(system, classes);
-							System.out.print(lcom.toString());
+							Set<ClassObject> classes = system.getClassObjects(selectedCompilationUnit);						
+
+							// calculates CF for a given class
+							CF cf = new CF(system.getClassObjects());
+							for (ClassObject c1 : classes) {
+								double cfactor = cf.classCF(c1);
+								System.out.println("CF\t" + c1.getName() + "\t" + cfactor);
+							}
 						}
 						else if(selectedType != null) {
 							// type selected
