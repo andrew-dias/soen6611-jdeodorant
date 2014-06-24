@@ -3,7 +3,9 @@ package view;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
+import metrics.CF;
 import metrics.LCOM;
+import metrics.MHF;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -111,16 +113,97 @@ public class MetricsAction  implements IObjectActionDelegate {
 						
 						if(selectedPackageFragmentRoot != null) {
 							// package fragment root selected
+							SystemObject system = ASTReader.getSystemObject();
+							Set<ClassObject> classes = system.getClassObjects(selectedPackageFragmentRoot);
+
+							// Coupling Factor
+							// calculate for system
+							System.out.println("--------CF---------");
+							System.out.println("----System level----");							
+							CF cf = new CF(classes);
+							double cfactor = cf.systemCF();
+							System.out.println("CF for " + selectedPackageFragmentRoot.getElementName() + ": " + cfactor);
+
+							// calculate for individual classes
+							System.out.println("----Class level-----");
+							for (ClassObject c1 : classes) {
+								cfactor = cf.classCF(c1);
+								System.out.println("CF for " + c1.getName() + ": " + cfactor);
+							}
+							
+							// Method Hiding Factor
+							// calculate for system
+							System.out.println("--------MHF---------");
+							System.out.println("----System level----");					
+							double mhfVal;
+							MHF mhf = new MHF(classes);
+							mhfVal = mhf.systemMHF();
+							System.out.println(selectedPackageFragmentRoot.getElementName() + "|" + mhfVal);
+
+							// calculate for individual classes
+							System.out.println("----Class level-----");
+							for (ClassObject c1 : classes) {
+								mhfVal = mhf.classMHF(c1);
+								System.out.println(c1.getName() + "|" + mhfVal);
+							}	
 						}
 						else if(selectedPackageFragment != null) {
 							// package fragment selected
+							// used for the purpose of generating metrics on a test suite without regard to classes outside of test suite
+							SystemObject system = ASTReader.getSystemObject();
+							Set<ClassObject> classes = system.getClassObjects(selectedPackageFragment);
+
+							// Coupling Factor
+							// calculate for a package
+							System.out.println("--------CF---------");
+							System.out.println("----Package level----");							
+							CF cf = new CF(classes);
+							double cfactor = cf.systemCF();
+							System.out.println("CF for " + selectedPackageFragment.getElementName() + ": " + cfactor);
+
+							// calculate for individual classes
+							System.out.println("----Class level-----");
+							for (ClassObject c1 : classes) {
+								cfactor = cf.classCF(c1);
+								System.out.println("CF for " + c1.getName() + ": " + cfactor);
+							}
+							
+							// Method Hiding Factor
+							// calculate for a package
+							System.out.println("--------MHF---------");
+							System.out.println("----Package level----");						
+							MHF mhf = new MHF(classes);
+							double mhfVal = mhf.systemMHF();
+							System.out.println("MHF for " + selectedPackageFragment.getElementName() + ": " + mhfVal);
+
+							// calculate for individual classes
+							System.out.println("----Class level-----");
+							for (ClassObject c1 : classes) {
+								mhfVal = mhf.classMHF(c1);
+								System.out.println(c1.getName() + "|" + mhfVal);
+							}	
 						}
 						else if(selectedCompilationUnit != null) {
-							// compilation unit selected
+							// compilation unit selected							
 							SystemObject system = ASTReader.getSystemObject();
-							Set<ClassObject> classes = system.getClassObjects(selectedCompilationUnit);
+							Set<ClassObject> classes = system.getClassObjects(selectedCompilationUnit);						
+
 							LCOM lcom = new LCOM(system, classes);
 							System.out.print(lcom.toString());
+
+							// calculates CF for a given class
+							CF cf = new CF(system.getClassObjects());
+							for (ClassObject c1 : classes) {
+								double cfactor = cf.classCF(c1);
+								System.out.println("CF for " + c1.getName() + ": " + cfactor);
+							}
+
+							// calculates MHF for a given class
+							MHF mhf = new MHF(system.getClassObjects());							
+							for (ClassObject c1 : classes) {
+								double mhfVal = mhf.classMHF(c1);
+								System.out.println("MHF for " + c1.getName() + ": " + mhfVal);
+							}						
 						}
 						else if(selectedType != null) {
 							// type selected
