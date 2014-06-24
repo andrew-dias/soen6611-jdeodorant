@@ -122,13 +122,13 @@ public class MetricsAction  implements IObjectActionDelegate {
 							System.out.println("----System level----");							
 							CF cf = new CF(classes);
 							double cfactor = cf.systemCF();
-							System.out.println("CF for " + selectedPackageFragmentRoot.getElementName() + ": " + cfactor);
+							System.out.println(selectedPackageFragmentRoot.getElementName() + ": " + cfactor);
 
 							// calculate for individual classes
 							System.out.println("----Class level-----");
 							for (ClassObject c1 : classes) {
 								cfactor = cf.classCF(c1);
-								System.out.println("CF for " + c1.getName() + ": " + cfactor);
+								System.out.println(c1.getName() + ": " + cfactor);
 							}
 							
 							// Method Hiding Factor
@@ -159,13 +159,13 @@ public class MetricsAction  implements IObjectActionDelegate {
 							System.out.println("----Package level----");							
 							CF cf = new CF(classes);
 							double cfactor = cf.systemCF();
-							System.out.println("CF for " + selectedPackageFragment.getElementName() + ": " + cfactor);
+							System.out.println(selectedPackageFragment.getElementName() + ": " + cfactor);
 
 							// calculate for individual classes
 							System.out.println("----Class level-----");
 							for (ClassObject c1 : classes) {
 								cfactor = cf.classCF(c1);
-								System.out.println("CF for " + c1.getName() + ": " + cfactor);
+								System.out.println(c1.getName() + ": " + cfactor);
 							}
 							
 							// Method Hiding Factor
@@ -174,7 +174,7 @@ public class MetricsAction  implements IObjectActionDelegate {
 							System.out.println("----Package level----");						
 							MHF mhf = new MHF(classes);
 							double mhfVal = mhf.systemMHF();
-							System.out.println("MHF for " + selectedPackageFragment.getElementName() + ": " + mhfVal);
+							System.out.println(selectedPackageFragment.getElementName() + ": " + mhfVal);
 
 							// calculate for individual classes
 							System.out.println("----Class level-----");
@@ -192,17 +192,21 @@ public class MetricsAction  implements IObjectActionDelegate {
 							System.out.print(lcom.toString());
 
 							// calculates CF for a given class
+							System.out.println("--------CF---------");
+							System.out.println("----Class level-----");
 							CF cf = new CF(system.getClassObjects());
 							for (ClassObject c1 : classes) {
 								double cfactor = cf.classCF(c1);
-								System.out.println("CF for " + c1.getName() + ": " + cfactor);
+								System.out.println(c1.getName() + ": " + cfactor);
 							}
 
 							// calculates MHF for a given class
+							System.out.println("--------MHF---------");
+							System.out.println("----Class level----");						
 							MHF mhf = new MHF(system.getClassObjects());							
 							for (ClassObject c1 : classes) {
 								double mhfVal = mhf.classMHF(c1);
-								System.out.println("MHF for " + c1.getName() + ": " + mhfVal);
+								System.out.println(c1.getName() + ": " + mhfVal);
 							}						
 						}
 						else if(selectedType != null) {
