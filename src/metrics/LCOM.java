@@ -89,7 +89,7 @@ public class LCOM {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for(String key : cohesionMap.keySet()) {
-			sb.append(key).append("\t").append(cohesionMap.get(key)).append("\n");
+			sb.append("LCOM").append("\t").append(key).append("\t").append(cohesionMap.get(key)).append(System.getProperty("line.separator"));
 		}
 		return sb.toString();
 	}
