@@ -145,11 +145,14 @@ public class MHF {
 	// checks if child is subclass of parent
 	private boolean isSubclass(ClassObject subClass, ClassObject superClass) {
 		boolean isSubclass = false;
+		boolean classFound = false;
+		ClassObject lSubClass = subClass;
 		
-		TypeObject superType = subClass.getSuperclass();
+		TypeObject superType = lSubClass.getSuperclass();
 			
 		// iteratively travel up class hierarchy
 		while (superType != null) {
+//			System.out.println("Loop: " + lSubClass.getName() + " ? " + superType.getClassType());
 			// check for match
 			if (superType.getClassType().equals(superClass.getName())) {
 				isSubclass = true;
@@ -158,11 +161,18 @@ public class MHF {
 			else {
 				// find class object for superType
 				for (ClassObject c : classSet) {
+					classFound = false;
 					if (c.getName().equals(superType.getClassType())) {
-						subClass = c;
-						superType = subClass.getSuperclass();
+						lSubClass = c;
+						superType = lSubClass.getSuperclass();
+						classFound = true;
 						break;
 					}
+				}
+				
+				// means supertype is outside of system so we stop looking
+				if (!classFound) {
+					superType = null;
 				}
 			}
 		}
