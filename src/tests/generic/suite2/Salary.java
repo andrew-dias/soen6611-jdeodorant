@@ -1,10 +1,10 @@
-package tests.suite9;
+package tests.generic.suite2;
 
-public class PerHour extends Payment {
+public class Salary extends Payment {
 
-	private int h;
+	private int b;
 	
-	public PerHour(int a) {
+	public Salary(int a) {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -17,13 +17,13 @@ public class PerHour extends Payment {
 	@Override
 	public void payAdmin() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void payTech() {
 		// TODO Auto-generated method stub
-
+		
 	}
-
+	
 }

@@ -1,4 +1,4 @@
-package tests.suite1;
+package tests.generic.suite1;
 
 
 public class B {

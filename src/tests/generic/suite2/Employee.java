@@ -1,4 +1,4 @@
-package tests.suite9;
+package tests.generic.suite2;
 
 public abstract class Employee {
 

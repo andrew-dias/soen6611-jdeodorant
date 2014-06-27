@@ -57,7 +57,7 @@ public class CF {
 		return result;			
 	}
 	
-	// return 1 if classes are coupled, 0 otherwise
+	// return 1 if c1 is a client of c2, 0 otherwise
 	private int client(ClassObject c1, ClassObject c2)
 	{
 		int result = 0;
@@ -66,15 +66,16 @@ public class CF {
 		// 0 if classes are the same
 		if (!c1.equals(c2)) {
 			
-			// check class-level field references to other classes
-			List<FieldObject> fields = c1.getFieldList();
-			for (FieldObject field : fields) {
-				if (field.getType().getClassType().equals(c2.getName())) {
-					coupled = true;
-				}
-			}
-
-			if (!coupled) {
+//			// check class-level field references to other classes
+//			List<FieldObject> fields = c1.getFieldList();
+//			for (FieldObject field : fields) {
+//				FieldInstructionObject fio = field.generateFieldInstruction();			
+//				if (field.getType().getClassType().equals(c2.getName())) {
+//					coupled = true;
+//				}
+//			}
+//
+//			if (!coupled) {
 				// get list of class methods 
 				List<MethodObject> methods = c1.getMethodList();
 				
@@ -85,7 +86,7 @@ public class CF {
 						break;
 					}
 				}
-			}
+//			}
 			
 			if (coupled) {
 				result = 1;

@@ -1,5 +1,7 @@
 package metrics;
 
+import java.util.HashSet;
+import java.util.ListIterator;
 import java.util.Set;
 
 import ast.Access;
@@ -36,7 +38,9 @@ public class MHF {
 		}
 		
 		// divide total visibility by number of methods in system
-		result = visibility/methodCount;
+		if (methodCount > 0) {		
+			result = visibility/methodCount;
+		}
 		
 		return result;
 	}
@@ -64,7 +68,10 @@ public class MHF {
 	// compute visibility of given method
 	private double v(MethodObject m, ClassObject c)
 	{
-		double result, visibility;
+		double result = 0;
+		double visibility;
+		
+		Set<ClassObject> visibleClasses = new HashSet<ClassObject>();
 		
 		Access a = m.getAccess();
 		
@@ -74,12 +81,18 @@ public class MHF {
 			visibility = tc-1;
 			break;
 		// protected methods are visible to classes in same package and subclasses 
-		case PROTECTED:			
-			visibility = packageClassNum(c)-1 + subclassNum(c);
+		case PROTECTED:	
+			// union of sets
+			visibleClasses.addAll(packageClasses(c));
+			visibleClasses.addAll(subclasses(c));
+			// subtract 1 to exclude method's class
+			visibility = visibleClasses.size()-1;
 			break;
 		// default visibility is same package
 		case NONE:
-			visibility = packageClassNum(c)-1;
+			visibleClasses.addAll(packageClasses(c));
+			// subtract 1 to exclude method's class
+			visibility = visibleClasses.size()-1;
 			break;
 		// private methods are not visible outside their class
 		case PRIVATE:
@@ -92,47 +105,68 @@ public class MHF {
 		}
 
 		// divide by total classes - 1
-		result = visibility/(tc-1);	
+		if (tc>1) {
+			result = visibility/(tc-1);
+		}
 		
 		return result;
 	}
 
-	// count the number of classes in the same package as the given class
-	private int packageClassNum(ClassObject c1) {
-		int classCount = 0;
+	// generate set of classes that share package of given class
+	private Set<ClassObject> packageClasses(ClassObject c1) {
+		Set<ClassObject> classes = new HashSet<ClassObject>();		
 		String pkgName1 = getPackageName(c1.getName());
 		
 		// loop through all system classes and look for matching package names
 		for (ClassObject c2 : classSet) {
 			String pkgName2 = getPackageName(c2.getName());
 			if (pkgName1.equals(pkgName2)) {
-				classCount++;
+				classes.add(c2);
 			}
 		}
-
-		return classCount;
+		
+		return classes;
 	}
 	
-	// count the number of subclasses of a given class
-	private int subclassNum(ClassObject c1) {
-		int classCount = 0;
-		String scName;
+	// generate set of subclasses of given class
+	private Set<ClassObject> subclasses(ClassObject c1) {
+		Set<ClassObject> classes = new HashSet<ClassObject>();
 		
 		// loop through all system classes
 		for (ClassObject c2 : classSet) {
-			TypeObject sc = c2.getSuperclass();
+			if (isSubclass(c2, c1)) {
+				classes.add(c2);
+			}
+		}
+		
+		return classes;
+	}
+	
+	// checks if child is subclass of parent
+	private boolean isSubclass(ClassObject subClass, ClassObject superClass) {
+		boolean isSubclass = false;
+		
+		TypeObject superType = subClass.getSuperclass();
 			
-			// if superclass exists, compare against given class name
-			if (sc != null) {
-				scName = sc.getClassType();
-
-				if (scName.equals(c1.getName())) {
-					classCount++;
+		// iteratively travel up class hierarchy
+		while (superType != null) {
+			// check for match
+			if (superType.getClassType().equals(superClass.getName())) {
+				isSubclass = true;
+				superType = null;
+			}
+			else {
+				// find class object for superType
+				for (ClassObject c : classSet) {
+					if (c.getName().equals(superType.getClassType())) {
+						subClass = c;
+						superType = subClass.getSuperclass();
+						break;
+					}
 				}
 			}
 		}
-
-		return classCount;
+		return isSubclass;
 	}
 	
 	// parses the package name from a fully qualified class name
